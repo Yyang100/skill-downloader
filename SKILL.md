@@ -92,7 +92,12 @@ Follow these rules strictly for where to install the skill:
 
 5. **Cleanup**
    - Remove temporary download files
-   - Done
+
+6. **Post-installation prompt**
+   - After successful installation/update and cleanup, ask the user: "Would you like me to explain the functions and usage of this new skill for you?"
+   - If user agrees, read the skill's SKILL.md and summarize the core functions, usage flow and key notes to the user
+
+7. **Done**
 
 ## Adding new sources
 
