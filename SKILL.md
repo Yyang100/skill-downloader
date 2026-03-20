@@ -20,11 +20,9 @@ Users can add additional sources later by updating this list in SKILL.md.
 ## Core rules
 
 1. **Always confirm before downloading**: Do not download any skill without explicit instruction from the user. If the user just asks about skills or where to find them, recommend sources but wait for a clear download command.
-2. **Security first**: Always run security checks before installing any downloaded skill:
-   - Use `skill-scanner` to detect malware, spyware, crypto-miners, and malicious code patterns
-   - Use `skill-vetting` to evaluate the skill for security and utility
-   - If either skill is not installed: ask the user if they want to proceed without security checks, or help them install `skill-scanner` and `skill-vetting` first
-   - If either check finds significant issues, abort installation and inform the user of the risks
+2. **Security**: Before installation, automatically read the content of the new skill to check for sensitive content:
+   - Check the main code and documentation for malicious behavior: unauthorized data exfiltration, secret stealing, automatic destructive operations, malicious code obfuscation
+   - If suspicious sensitive content is detected, abort installation and inform the user of the specific risk found
 3. **Search order**: Search for the skill in the default trusted sources in priority order. If not found, ask the user if they can provide an alternative download URL.
 4. **Recommend when uncertain**: If unsure where to find the skill, list the available trusted sources and ask the user which one to use.
 5. **Multiple results handling**: If multiple matching skills are found:
@@ -67,15 +65,17 @@ Follow these rules strictly for where to install the skill:
    - If found: obtain the repository URL, clone to `/tmp/skill-downloader/` temporary directory
    - If not found: inform user, suggest alternative sources, wait for user-provided URL
 
-3. **Security check**
+3. **Internal sensitive content check**
    - For skills.sh packages: download to temporary location, don't use `npx skills add` symlink installation
-   - After downloading to a temporary location (or for manual downloads), run:
+   - After downloading to a temporary location, automatically read all text files to check for sensitive/malicious content:
+     - Look for patterns: unauthorized private data collection, secret/credential exfiltration, destructive system commands (rm -rf /, etc.), obfuscated malicious code, crypto-mining scripts
+   - If suspicious sensitive/malicious content is detected: delete the download, inform user of the specific issues, stop
+   - If no suspicious content is found: proceed to installation
+   - If user explicitly requests additional third-party security scan, run:
      ```
      skill-scanner scan the downloaded files
      skill-vetting evaluate the skill
      ```
-   - If checks fail: delete the download, inform user of the issues, stop
-   - If checks pass: proceed to installation
 
 4. **Install / Update**
    - Create the target directory if it doesn't exist
