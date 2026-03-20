@@ -1,7 +1,7 @@
 ---
 name: skill-downloader
 description: Download and install OpenClaw skills from trusted sources including skills.sh, ClawHub, and GitHub. Always use this skill when the user requests to download, install, or add third-party skills.
-compatibility: requires git, curl, Node.js/npm, and access to skill-scanner and skill-vetting skills
+compatibility: requires git, curl, Node.js/npm
 ---
 
 # skill-downloader
