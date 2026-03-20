@@ -81,10 +81,14 @@ Follow these rules strictly for where to install the skill:
    - Create the target directory if it doesn't exist
    - If updating existing skill:
      - Backup old version to target directory with `.bak` suffix (e.g. `skill-name.bak.<timestamp>`)
-     - Remove old files from target directory (keep the backup)
+     - **Preserve skill-generated data**:
+       - Keep all non-source files that are not part of the original download (e.g. cached data, user configuration, generated outputs)
+       - Only delete/overwrite files that exist in the new downloaded version
+       - Do not delete empty directories or directories that contain user data
    - Copy the full source files from temp to target directory (**do NOT use symlinks**)
+   - Overwrite only existing source files, leave untouched any additional user/data files
    - Verify the skill structure (ensures SKILL.md exists)
-   - If updated: inform user that the update is complete, mention the backup location
+   - If updated: inform user that the update is complete, mention the backup location and that existing user data has been preserved
    - If installed: inform user of successful new installation:
      - Where it was installed
      - How to use it
