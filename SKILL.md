@@ -54,6 +54,10 @@ Follow these rules strictly for where to install the skill:
    - Extract the skill name to download
    - Check if user requested global installation
    - Confirm this is an explicit download request (if not, ask for confirmation)
+   - **Check existing installation**:
+     - For global installation: check if skill already exists at `~/.openclaw/skills/<skill-name>/`
+     - For local installation: check if skill already exists at `{current_workspace}/skills/<skill-name>/`
+     - If skill already exists: inform the user the skill is already installed, ask whether they want to **update** it to the latest version, then proceed accordingly
 
 2. **Find the skill**
    - For `skills.sh` source: use the `npx skills find <query>` CLI to search the open ecosystem
@@ -73,11 +77,15 @@ Follow these rules strictly for where to install the skill:
    - If checks fail: delete the download, inform user of the issues, stop
    - If checks pass: proceed to installation
 
-4. **Install**
+4. **Install / Update**
    - Create the target directory if it doesn't exist
+   - If updating existing skill:
+     - Backup old version to target directory with `.bak` suffix (e.g. `skill-name.bak.<timestamp>`)
+     - Remove old files from target directory (keep the backup)
    - Copy the full source files from temp to target directory (**do NOT use symlinks**)
    - Verify the skill structure (ensures SKILL.md exists)
-   - Inform user of successful installation:
+   - If updated: inform user that the update is complete, mention the backup location
+   - If installed: inform user of successful new installation:
      - Where it was installed
      - How to use it
      - Any additional setup required
