@@ -1,6 +1,6 @@
-# skill-downloader
+# Skill Downloader
 
-> Discover and install OpenClaw skills from trusted sources with transparent review and directory-safe handling.
+> Discover and install OpenClaw skills from trusted sources with transparent review and directory-safe installation handling.
 
 ## Source
 
@@ -10,8 +10,8 @@
 
 ## Features
 
-- 🔍 **Search skills**: Find skills by name or description (triggers on "find X skill", "search for Y", etc.)
-- 📥 **Install skills**: Install trusted skills with transparent review steps (triggers on "install X skill", "download Y", etc.)
+- 🔍 **Search skills**: Discover skills by name or description (triggers on "find X skill", "search for Y", etc.)
+- 📥 **Install skills**: Install trusted skills with transparent review and safe installation steps (triggers on "install X skill", "download Y", etc.)
 - 🛡️ **Security-aware workflow**: Prioritizes manual source review before installation; optional extra checks can be run when available
 - 📁 **Flexible installation**: 
   - Global install to `~/.openclaw/skills` (when user mentions "global")
