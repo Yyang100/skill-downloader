@@ -13,12 +13,18 @@ triggers:
   - "install skill"
   - "添加技能"
   - "下载技能"
-compatibility: requires git, curl, Node.js/npm
+compatibility: requires git, curl, Node.js/npm, network access; `npx` is used only as a fallback for skills.sh discovery
 ---
 
 # skill-downloader
 
 Download and install OpenClaw skills from trusted sources with proper security checks and directory handling.
+
+## Source
+
+- Maintainer: `Yyang100`
+- Canonical repository: `https://github.com/Yyang100/skill-downloader`
+- ClawHub page: `https://clawhub.ai/yyang100/skill-downloader`
 
 ## Trusted download sources
 
@@ -28,6 +34,15 @@ Default trusted sources (ordered by priority):
 3. `https://github.com/anthropics/skills` - Anthropic example skills repository
 
 Users can add additional sources later by updating this list in SKILL.md.
+
+## Security and runtime model
+
+- This skill may access trusted registries and repositories including `https://clawhub.ai/`, `https://skills.sh/`, and relevant GitHub repositories.
+- It requires network access plus `git`, `curl`, Node.js/npm, and `npx` availability when using the `skills.sh` fallback path.
+- `npx skills find <query>` is a fallback mechanism for `skills.sh` discovery, not the default search path.
+- Do not download or install anything without explicit user confirmation.
+- Do not use undocumented package execution flows when the documented trusted-source workflow is sufficient.
+- Prefer direct inspection of downloaded source files before installation.
 
 ## Core rules
 
@@ -88,7 +103,7 @@ When user only asks to "search", "find", or "look for" a skill (no download/inst
 
 2. **Find the skill**
    - For `clawhub.ai` source: search ClawHub first
-   - For `skills.sh` source: use the `npx skills find <query>` CLI to search the open ecosystem
+   - For `skills.sh` source: use the `npx skills find <query>` CLI only as a fallback to search the open ecosystem
    - For other sources: search manually in the configured trusted repositories
    - Search in priority order (ClawHub first)
    - If multiple matching skills found: organize information (name, description, popularity, source) and recommend → wait for user selection

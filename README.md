@@ -2,6 +2,12 @@
 
 > Search and install OpenClaw skills from trusted sources with security checks and proper directory handling.
 
+## Source
+
+- Maintainer: `Yyang100`
+- Canonical repository: `https://github.com/Yyang100/skill-downloader`
+- ClawHub page: `https://clawhub.ai/yyang100/skill-downloader`
+
 ## Features
 
 - 🔍 **Search skills**: Find skills by name or description (triggers on "find X skill", "search for Y", etc.)
@@ -24,6 +30,15 @@ You can add more trusted sources by editing `SKILL.md`.
 ## Maintenance note
 
 When updating this skill's behavior or source priority, keep `SKILL.md` and `README.md` in sync.
+
+## Security and runtime model
+
+- This skill may access trusted registries and repositories including `https://clawhub.ai/`, `https://skills.sh/`, and relevant GitHub repositories.
+- It requires a network connection, `git`, `curl`, Node.js/npm, and `npx` availability when using the `skills.sh` fallback path.
+- `npx skills find <query>` is a fallback mechanism for `skills.sh` discovery, not the default search path.
+- The skill must not download or install anything without explicit user confirmation.
+- Downloaded skill contents should be reviewed before installation, and source files should be copied rather than symlinked into the target directory.
+- The skill is intended to help users inspect and install third-party skills; it is not intended to execute arbitrary unrelated packages or bypass user review.
 
 ## When to use this skill
 
@@ -69,6 +84,8 @@ npx skills add Yyang100/skill-downloader@skill-downloader -g
 - git
 - curl
 - Node.js/npm
+- `npx` (used only as a fallback for `skills.sh` discovery)
+- network access to trusted registries/repositories
 - `skill-scanner` (optional but recommended)
 - `skill-vetting` (optional but recommended)
 
