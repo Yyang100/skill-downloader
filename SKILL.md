@@ -13,7 +13,7 @@ triggers:
   - "install skill"
   - "添加技能"
   - "下载技能"
-compatibility: requires git, curl, Node.js/npm, network access; `npx` is used only as a fallback for skills.sh discovery
+compatibility: requires git, curl, network access, and the ability to review downloaded source files locally
 ---
 
 # skill-downloader
@@ -30,7 +30,7 @@ Download and install OpenClaw skills from trusted sources with proper security c
 
 Default trusted sources (ordered by priority):
 1. `https://clawhub.ai/` - Official ClawHub skill repository
-2. `https://skills.sh/` - Open agent skills ecosystem registry (via npx skills CLI)
+2. `https://skills.sh/` - Open agent skills ecosystem registry (manual discovery or user-provided links)
 3. `https://github.com/anthropics/skills` - Anthropic example skills repository
 
 Users can add additional sources later by updating this list in SKILL.md.
@@ -38,11 +38,11 @@ Users can add additional sources later by updating this list in SKILL.md.
 ## Security and runtime model
 
 - This skill may access trusted registries and repositories including `https://clawhub.ai/`, `https://skills.sh/`, and relevant GitHub repositories.
-- It requires network access plus `git`, `curl`, Node.js/npm, and `npx` availability when using the `skills.sh` fallback path.
-- `npx skills find <query>` is a fallback mechanism for `skills.sh` discovery, not the default search path.
+- It requires network access plus `git`, `curl`, and the ability to inspect downloaded source files locally.
+- Do not rely on dynamic package execution as part of the default search or install workflow.
 - Do not download or install anything without explicit user confirmation.
-- Do not use undocumented package execution flows when the documented trusted-source workflow is sufficient.
 - Prefer direct inspection of downloaded source files before installation.
+- Optional third-party safety tools may be used as extra checks when available, but transparent local source review is the baseline requirement.
 
 ## Core rules
 
@@ -80,7 +80,7 @@ Follow these rules strictly for where to install the skill:
 When user only asks to "search", "find", or "look for" a skill (no download/install intent):
 
 1. **Detect search intent** — User asks "find X skill", "search for Y", "is there a skill that can..."
-2. **Search trusted sources in priority order** — Prefer searching `https://clawhub.ai/` first; if needed, fall back to `npx skills find <query>` for skills.sh and then other trusted sources
+2. **Search trusted sources in priority order** — Prefer searching `https://clawhub.ai/` first; if needed, inspect trusted repository pages or user-provided links for skills.sh and then other trusted sources
 3. **Present results** — Show results in table format with:
    - Skill name and owner/repo
    - Install count (popularity)
@@ -103,7 +103,7 @@ When user only asks to "search", "find", or "look for" a skill (no download/inst
 
 2. **Find the skill**
    - For `clawhub.ai` source: search ClawHub first
-   - For `skills.sh` source: use the `npx skills find <query>` CLI only as a fallback to search the open ecosystem
+   - For `skills.sh` source: inspect the relevant registry/repository pages manually or use user-provided links
    - For other sources: search manually in the configured trusted repositories
    - Search in priority order (ClawHub first)
    - If multiple matching skills found: organize information (name, description, popularity, source) and recommend → wait for user selection
@@ -111,16 +111,12 @@ When user only asks to "search", "find", or "look for" a skill (no download/inst
    - If not found: inform user, suggest alternative sources, wait for user-provided URL
 
 3. **Internal sensitive content check**
-   - For skills.sh packages: download to temporary location, don't use `npx skills add` symlink installation
+   - For skills.sh packages: download to a temporary location using a transparent file-based workflow; do not use symlink-based installation
    - After downloading to a temporary location, automatically read all text files to check for sensitive/malicious content:
      - Look for patterns: unauthorized private data collection, secret/credential exfiltration, destructive system commands (rm -rf /, etc.), obfuscated malicious code, crypto-mining scripts
    - If suspicious sensitive/malicious content is detected: delete the download, inform user of the specific issues, stop
    - If no suspicious content is found: proceed to installation
-   - If user explicitly requests additional third-party security scan, run:
-     ```
-     skill-scanner scan the downloaded files
-     skill-vetting evaluate the skill
-     ```
+   - If additional third-party safety tools are available and the user wants extra checks, run them as an extra verification layer after the baseline manual review
 
 4. **Install / Update**
    - Create the target directory if it doesn't exist
@@ -172,4 +168,4 @@ Users can add new trusted sources by appending to the *Trusted download sources*
 
 **Example 4: Uncertain request**
 > User: Where can I find a good markdown processing skill?
-- "You can find skills on https://skills.sh/, https://clawhub.ai/, or https://github.com/anthropics/skills. Would you like me to search for and download a markdown processing skill?"
+- "You can find skills on https://clawhub.ai/, https://skills.sh/, or https://github.com/anthropics/skills. Would you like me to search for and download a markdown processing skill?"
