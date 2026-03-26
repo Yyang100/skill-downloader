@@ -1,6 +1,6 @@
 # skill-downloader
 
-> Search and install OpenClaw skills from trusted sources with security checks and proper directory handling.
+> Discover and install OpenClaw skills from trusted sources with transparent review and directory-safe handling.
 
 ## Source
 
@@ -11,7 +11,7 @@
 ## Features
 
 - 🔍 **Search skills**: Find skills by name or description (triggers on "find X skill", "search for Y", etc.)
-- 📥 **Install skills**: Download and install with security checks (triggers on "install X skill", "download Y", etc.)
+- 📥 **Install skills**: Install trusted skills with transparent review steps (triggers on "install X skill", "download Y", etc.)
 - 🛡️ **Security-aware workflow**: Prioritizes manual source review before installation; optional extra checks can be run when available
 - 📁 **Flexible installation**: 
   - Global install to `~/.openclaw/skills` (when user mentions "global")
@@ -34,10 +34,12 @@ When updating this skill's behavior or source priority, keep `SKILL.md` and `REA
 ## Security and runtime model
 
 - This skill may access trusted registries and repositories including `https://clawhub.ai/`, `https://skills.sh/`, and relevant GitHub repositories.
-- It requires a network connection, `git`, `curl`, and access to trusted registries/repositories.
+- It requires a network connection, `git`, `curl`, and access to trusted registries/repositories; if `clawhub` CLI is available, prefer it for ClawHub-hosted skills.
 - It does not rely on dynamic package execution as part of the default search or install workflow.
 - The skill must not download or install anything without explicit user confirmation.
-- Downloaded skill contents should be reviewed before installation, and source files should be copied rather than symlinked into the target directory.
+- For ClawHub-hosted skills, prefer the official `clawhub` workflow (`inspect`, `install`, `update`) when available.
+- If the official ClawHub workflow is unavailable, use an agent-managed transparent file installation workflow with unique per-run temporary directories.
+- Downloaded skill contents should be reviewed before installation, and source files should be copied rather than symlinked into the target directory unless the official ClawHub workflow is used.
 - The skill is intended to help users inspect and install third-party skills; it is not intended to execute arbitrary unrelated packages or bypass user review.
 
 ## When to use this skill
@@ -52,9 +54,10 @@ Use this skill whenever the user:
 1. **Always confirm before downloading** - Never download without explicit user instruction
 2. **Security-aware review** - Always review downloaded source contents before installation; if issues are found, abort
 3. **Search in priority order** - ClawHub first, then skills.sh, then GitHub
-4. **Full source copy** - Copy all source files, do not use symlinks
-5. **Temporary directory** - Clone to `/tmp/skill-downloader/` before installation
-6. **Cleanup** - Remove temporary files after installation
+4. **Prefer official ClawHub installation** - For ClawHub-hosted skills, use `clawhub inspect/install/update` when the CLI is available
+5. **Transparent fallback workflow** - If official ClawHub installation is unavailable, use an agent-managed transparent file installation workflow
+6. **Temporary working directory** - Use a unique per-run temporary working directory for transparent file installation
+7. **Cleanup** - Remove temporary files after installation
 
 ## Workflow
 
@@ -67,9 +70,10 @@ Use this skill whenever the user:
 ### Mode B: Installation
 1. **Capture request** - Get skill name and check if global installation is requested
 2. **Find the skill** - Search ClawHub first, then other trusted sources in priority order; show results with recommendations
-3. **Security check** - Scan for malware and evaluate utility
-4. **Install** - Copy full source to target directory, verify structure
-5. **Cleanup** - Remove temporary files
+3. **Choose installation workflow** - Prefer the official `clawhub` workflow for ClawHub-hosted skills; otherwise use the transparent file installation workflow
+4. **Security check** - Review downloaded source contents and evaluate utility when using the transparent file installation workflow
+5. **Install** - Install via `clawhub` when available for ClawHub-hosted skills, otherwise copy full source to target directory and verify structure
+6. **Cleanup** - Remove the unique per-run temporary working directory used by the transparent file installation workflow
 
 ## Installation
 
@@ -79,7 +83,14 @@ Recommended installation target for a global install:
 ~/.openclaw/skills/skill-downloader
 ```
 
-Use your preferred trusted installation workflow to place the full source there; do not rely on symlink-based installs.
+For ClawHub-hosted skills, prefer the official CLI workflow when available:
+
+```bash
+clawhub inspect <slug>
+clawhub install <slug> --dir ~/.openclaw/skills
+```
+
+If `clawhub` is unavailable, fall back to the transparent file installation workflow and place the reviewed full source in the appropriate skills directory.
 
 ## Requirements
 

@@ -1,6 +1,6 @@
 ---
 name: skill-downloader
-description: Search and install OpenClaw skills from trusted sources including skills.sh, ClawHub, and GitHub. Handles both "find X skill" search queries and "install X skill" download requests. Always use this skill when the user requests to download, install, or add third-party skills.
+description: Discover and install OpenClaw skills from trusted sources including ClawHub, skills.sh, and GitHub. Handles both "find X skill" discovery queries and "install X skill" requests using transparent review and directory-safe installation steps. Always use this skill when the user requests to download, install, or add third-party skills.
 triggers:
   - "search"
   - "find"
@@ -18,7 +18,7 @@ compatibility: requires git, curl, network access, and the ability to review dow
 
 # skill-downloader
 
-Download and install OpenClaw skills from trusted sources with proper security checks and directory handling.
+Discover and install OpenClaw skills from trusted sources with transparent review and directory-safe handling.
 
 ## Source
 
@@ -38,10 +38,12 @@ Users can add additional sources later by updating this list in SKILL.md.
 ## Security and runtime model
 
 - This skill may access trusted registries and repositories including `https://clawhub.ai/`, `https://skills.sh/`, and relevant GitHub repositories.
-- It requires network access plus `git`, `curl`, and the ability to inspect downloaded source files locally.
+- It requires network access plus `git`, `curl`, and the ability to inspect downloaded source files locally; if `clawhub` CLI is available, prefer it for ClawHub-hosted skills.
 - Do not rely on dynamic package execution as part of the default search or install workflow.
 - Do not download or install anything without explicit user confirmation.
-- Prefer direct inspection of downloaded source files before installation.
+- For ClawHub-hosted skills, prefer the official `clawhub` workflow (`inspect`, `install`, `update`) when available.
+- If the official ClawHub workflow is unavailable, use an agent-managed transparent file installation workflow with a unique per-run temporary working directory.
+- Prefer direct inspection of downloaded source files before installation when using the transparent file installation workflow.
 - Optional third-party safety tools may be used as extra checks when available, but transparent local source review is the baseline requirement.
 
 ## Core rules
@@ -92,6 +94,8 @@ When user only asks to "search", "find", or "look for" a skill (no download/inst
 
 ### Mode B: Installation (download + install)
 
+Use the official ClawHub installation workflow for ClawHub-hosted skills whenever the `clawhub` CLI is available. Use the transparent file installation workflow only when the official ClawHub workflow is unavailable or when the source is outside ClawHub.
+
 1. **Capture request**
    - Extract the skill name to download
    - Check if user requested global installation
@@ -107,28 +111,36 @@ When user only asks to "search", "find", or "look for" a skill (no download/inst
    - For other sources: search manually in the configured trusted repositories
    - Search in priority order (ClawHub first)
    - If multiple matching skills found: organize information (name, description, popularity, source) and recommend → wait for user selection
-   - If found: obtain the repository URL, clone to `/tmp/skill-downloader/` temporary directory
+   - If the selected skill is hosted on ClawHub and `clawhub` CLI is available: inspect it with the official CLI before installation
+   - If the transparent file installation workflow is needed: obtain the repository URL and download or clone it into a unique per-run temporary working directory under the system temp location
    - If not found: inform user, suggest alternative sources, wait for user-provided URL
 
 3. **Internal sensitive content check**
-   - For skills.sh packages: download to a temporary location using a transparent file-based workflow; do not use symlink-based installation
+   - For the transparent file installation workflow: download to a unique per-run temporary location and do not use symlink-based installation
    - After downloading to a temporary location, automatically read all text files to check for sensitive/malicious content:
      - Look for patterns: unauthorized private data collection, secret/credential exfiltration, destructive system commands (rm -rf /, etc.), obfuscated malicious code, crypto-mining scripts
    - If suspicious sensitive/malicious content is detected: delete the download, inform user of the specific issues, stop
    - If no suspicious content is found: proceed to installation
+   - If the official `clawhub` workflow is available for a ClawHub-hosted skill, prefer `clawhub inspect` before `clawhub install`
    - If additional third-party safety tools are available and the user wants extra checks, run them as an extra verification layer after the baseline manual review
 
 4. **Install / Update**
-   - Create the target directory if it doesn't exist
-   - If updating existing skill:
-     - Backup old version to target directory with `.bak` suffix (e.g. `skill-name.bak.<timestamp>`)
-     - **Preserve skill-generated data**:
-       - Keep all non-source files that are not part of the original download (e.g. cached data, user configuration, generated outputs)
-       - Only delete/overwrite files that exist in the new downloaded version
-       - Do not delete empty directories or directories that contain user data
-   - Copy the full source files from temp to target directory (**do NOT use symlinks**)
-   - Overwrite only existing source files, leave untouched any additional user/data files
-   - Verify the skill structure (ensures SKILL.md exists)
+   - If the selected skill is hosted on ClawHub and `clawhub` CLI is available:
+     - For inspection: use `clawhub inspect <slug>`
+     - For global install: use `clawhub install <slug> --dir ~/.openclaw/skills`
+     - For local install: use `clawhub install <slug> --dir {current_workspace}/skills`
+     - For updates, prefer the official ClawHub update/install workflow instead of a custom copy-based update flow
+   - Otherwise, use the transparent file installation workflow:
+     - Create the target directory if it doesn't exist
+     - If updating existing skill:
+       - Backup old version to target directory with `.bak` suffix (e.g. `skill-name.bak.<timestamp>`)
+       - **Preserve skill-generated data**:
+         - Keep all non-source files that are not part of the original download (e.g. cached data, user configuration, generated outputs)
+         - Only delete/overwrite files that exist in the new downloaded version
+         - Do not delete empty directories or directories that contain user data
+     - Copy the full source files from temp to target directory (**do NOT use symlinks**)
+     - Overwrite only existing source files, leave untouched any additional user/data files
+     - Verify the skill structure (ensures SKILL.md exists)
    - If updated: inform user that the update is complete, mention the backup location and that existing user data has been preserved
    - If installed: inform user of successful new installation:
      - Where it was installed
@@ -136,7 +148,7 @@ When user only asks to "search", "find", or "look for" a skill (no download/inst
      - Any additional setup required
 
 5. **Cleanup**
-   - Remove temporary download files
+   - Remove the unique per-run temporary working directory and any temporary download files created for that run
 
 6. **Post-installation prompt**
    - After successful installation/update and cleanup, ask the user: "Would you like me to explain the functions and usage of this new skill for you?"
