@@ -15,11 +15,15 @@
 
 ## Trusted Sources (by priority)
 
-1. `https://skills.sh/` - Open agent skills ecosystem registry (via `npx skills find`)
-2. `https://clawhub.ai/` - Official ClawHub skill repository
+1. `https://clawhub.ai/` - Official ClawHub skill repository
+2. `https://skills.sh/` - Open agent skills ecosystem registry (via `npx skills find`)
 3. `https://github.com/anthropics/skills` - Anthropic example skills repository
 
 You can add more trusted sources by editing `SKILL.md`.
+
+## Maintenance note
+
+When updating this skill's behavior or source priority, keep `SKILL.md` and `README.md` in sync.
 
 ## When to use this skill
 
@@ -32,7 +36,7 @@ Use this skill whenever the user:
 
 1. **Always confirm before downloading** - Never download without explicit user instruction
 2. **Security first** - Always run security checks; abort if issues are found
-3. **Search in priority order** - skills.sh first, then ClawHub, then GitHub
+3. **Search in priority order** - ClawHub first, then skills.sh, then GitHub
 4. **Full source copy** - Copy all source files, do not use symlinks
 5. **Temporary directory** - Clone to `/tmp/skill-downloader/` before installation
 6. **Cleanup** - Remove temporary files after installation
@@ -41,13 +45,13 @@ Use this skill whenever the user:
 
 ### Mode A: Search Only
 1. **Detect search intent** - User asks to find/search a skill
-2. **Run npx skills find** - Search skills.sh
+2. **Search trusted sources in priority order** - Search ClawHub first, then fall back to `npx skills find` for skills.sh, then other trusted sources
 3. **Present results** - Show table with name, popularity, URL
 4. **Wait for user** - Ask if they want to install any result
 
 ### Mode B: Installation
 1. **Capture request** - Get skill name and check if global installation is requested
-2. **Find the skill** - Search in trusted sources, show results with recommendations
+2. **Find the skill** - Search ClawHub first, then other trusted sources in priority order; show results with recommendations
 3. **Security check** - Scan for malware and evaluate utility
 4. **Install** - Copy full source to target directory, verify structure
 5. **Cleanup** - Remove temporary files

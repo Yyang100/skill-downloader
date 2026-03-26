@@ -23,8 +23,8 @@ Download and install OpenClaw skills from trusted sources with proper security c
 ## Trusted download sources
 
 Default trusted sources (ordered by priority):
-1. `https://skills.sh/` - Open agent skills ecosystem registry (via npx skills CLI)
-2. `https://clawhub.ai/` - Official ClawHub skill repository
+1. `https://clawhub.ai/` - Official ClawHub skill repository
+2. `https://skills.sh/` - Open agent skills ecosystem registry (via npx skills CLI)
 3. `https://github.com/anthropics/skills` - Anthropic example skills repository
 
 Users can add additional sources later by updating this list in SKILL.md.
@@ -35,7 +35,7 @@ Users can add additional sources later by updating this list in SKILL.md.
 2. **Security**: Before installation, automatically read the content of the new skill to check for sensitive content:
    - Check the main code and documentation for malicious behavior: unauthorized data exfiltration, secret stealing, automatic destructive operations, malicious code obfuscation
    - If suspicious sensitive content is detected, abort installation and inform the user of the specific risk found
-3. **Search order**: Search for the skill in the default trusted sources in priority order. If not found, ask the user if they can provide an alternative download URL.
+3. **Search order**: Search for the skill in the default trusted sources in priority order, with `https://clawhub.ai/` first by default. If not found, ask the user if they can provide an alternative download URL.
 4. **Recommend when uncertain**: If unsure where to find the skill, list the available trusted sources and ask the user which one to use.
 5. **Multiple results handling**: If multiple matching skills are found:
    - Collect skill name, description, popularity/install count (if available), source repository, and skills.sh page URL
@@ -65,7 +65,7 @@ Follow these rules strictly for where to install the skill:
 When user only asks to "search", "find", or "look for" a skill (no download/install intent):
 
 1. **Detect search intent** — User asks "find X skill", "search for Y", "is there a skill that can..."
-2. **Use npx skills find** — Run `npx skills find <query>` to search skills.sh
+2. **Search trusted sources in priority order** — Prefer searching `https://clawhub.ai/` first; if needed, fall back to `npx skills find <query>` for skills.sh and then other trusted sources
 3. **Present results** — Show results in table format with:
    - Skill name and owner/repo
    - Install count (popularity)
@@ -87,9 +87,10 @@ When user only asks to "search", "find", or "look for" a skill (no download/inst
      - If skill already exists: inform the user the skill is already installed, ask whether they want to **update** it to the latest version, then proceed accordingly
 
 2. **Find the skill**
+   - For `clawhub.ai` source: search ClawHub first
    - For `skills.sh` source: use the `npx skills find <query>` CLI to search the open ecosystem
    - For other sources: search manually in the configured trusted repositories
-   - Search in priority order (skills.sh first)
+   - Search in priority order (ClawHub first)
    - If multiple matching skills found: organize information (name, description, popularity, source) and recommend → wait for user selection
    - If found: obtain the repository URL, clone to `/tmp/skill-downloader/` temporary directory
    - If not found: inform user, suggest alternative sources, wait for user-provided URL
