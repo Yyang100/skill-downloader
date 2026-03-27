@@ -1,6 +1,6 @@
 ---
 name: skill-downloader
-version: 0.1.11
+version: 0.1.13
 description: Discover and install OpenClaw skills from trusted sources including ClawHub, skills.sh, and GitHub. Handles both "find X skill" discovery queries and "install X skill" requests using transparent review and safe installation steps. Always use this skill when the user requests to download, install, or add third-party skills.
 author: Yyang100
 triggers:
