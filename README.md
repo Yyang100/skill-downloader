@@ -1,10 +1,10 @@
 # Skill Downloader
 
-> Discover and install OpenClaw skills from trusted sources with transparent review and careful installation handling.
+> Discover OpenClaw skills from trusted sources and guide safe review before installation.
 
-Skill Downloader helps agents discover and review OpenClaw skills from trusted sources before installation.
+Skill Downloader helps agents discover candidate OpenClaw skills from trusted sources and review them carefully before installation.
 
-By default it operates in search-and-review mode. It does not automatically execute third-party code, and any download or installation step requires explicit user approval plus local source inspection.
+By default it operates in search-and-review mode. It does not automatically run third-party code, and any download or installation step requires explicit user approval and local source inspection.
 
 ## Source
 
@@ -17,7 +17,7 @@ By default it operates in search-and-review mode. It does not automatically exec
 - 🔍 **Search skills**: Discover candidate skills by name, summary, or use case
 - 🧾 **Review before install**: Default behavior is discovery and inspection, not automatic installation
 - 🛡️ **Security-first workflow**: Emphasizes explicit approval, local source review, and trusted-source preference
-- 📦 **Careful installation assistance**: Supports transparent installation only after the user confirms
+- 📦 **Guided installation workflow**: Helps with installation only after explicit user confirmation
 - 📁 **Flexible installation targets**:
   - Global install to `~/.openclaw/skills` when the user explicitly asks for global installation
   - Local install to current workspace `./skills` by default
@@ -26,7 +26,7 @@ By default it operates in search-and-review mode. It does not automatically exec
 
 ## Safety first
 
-This skill is designed to reduce installation risk, not bypass review.
+This skill is designed to support careful review and reduce installation risk, not bypass it.
 
 - Default mode is discovery and review, not automatic installation
 - Never install a skill without explicit user confirmation
@@ -92,7 +92,7 @@ clawhub inspect <slug>
 clawhub install <slug> --dir ~/.openclaw/skills
 ```
 
-If `clawhub` is unavailable, fall back to the transparent file installation workflow and place the reviewed full source in the appropriate skills directory.
+If `clawhub` is unavailable, use the transparent fallback workflow to review source files and place the approved skill files in the appropriate skills directory.
 
 ## Requirements
 
