@@ -1,7 +1,7 @@
 ---
 name: skill-downloader
 version: 0.1.14
-description: Discover and review OpenClaw skills from trusted sources such as ClawHub, skills.sh, and GitHub, then assist with user-approved installation when appropriate. Use when the user wants to find, compare, inspect, or carefully install third-party skills.
+description: Discover and review OpenClaw skills from trusted sources such as ClawHub, skills.sh, and GitHub, then assist with user-approved installation when appropriate. Designed for careful search, comparison, inspection, and installation guidance rather than automatic execution.
 author: Yyang100
 triggers:
   - "search"
@@ -15,12 +15,12 @@ triggers:
   - "install skill"
   - "添加技能"
   - "下载技能"
-compatibility: requires trusted network access and the ability to review candidate skill files locally
+compatibility: requires trusted network access, local file review capability, and standard command-line tooling support for approved inspection or installation workflows
 permissions:
   fileRead: true - Read candidate skill files for review and safety checks
   fileWrite: true - Write reviewed skill files to the selected installation directory
   network: true - Access trusted skill registries (ClawHub, skills.sh, GitHub) to discover and review skills
-  shell: true - Use standard local tools to support approved inspection and installation workflows when required
+  shell: true - Use standard local command-line tools only when needed to support approved review or installation workflows
 trustScore: 90
 category: Utility
 ---
@@ -47,7 +47,8 @@ Users can add additional sources later by updating this list in SKILL.md.
 ## Security and runtime model
 
 - This skill may access trusted registries and repositories including `https://clawhub.ai/`, `https://skills.sh/`, and relevant GitHub repositories.
-- It may use trusted local tooling and network access to inspect candidate skill files locally; if `clawhub` CLI is available, prefer it for ClawHub-hosted skills.
+- It may use trusted local command-line tooling and network access to inspect candidate skill files locally; if `clawhub` CLI is available, prefer it for ClawHub-hosted skills.
+- Standard local tools may be used during approved workflows, but this skill should not assume that every environment has the same toolchain available.
 - Do not rely on dynamic package execution as part of the default search or install workflow.
 - Do not download or install anything without explicit user confirmation.
 - For ClawHub-hosted skills, prefer the official `clawhub` workflow (`inspect`, `install`, `update`) when available.
