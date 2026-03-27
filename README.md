@@ -1,6 +1,6 @@
 # Skill Downloader
 
-> Discover, review, and install OpenClaw skills from trusted sources with transparent review and careful installation handling.
+> Discover and install OpenClaw skills from trusted sources with transparent review and careful installation handling.
 
 Skill Downloader helps agents discover and review OpenClaw skills from trusted sources before installation.
 
