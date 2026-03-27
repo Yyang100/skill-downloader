@@ -15,12 +15,12 @@ triggers:
   - "install skill"
   - "添加技能"
   - "下载技能"
-compatibility: requires git, curl, network access, and the ability to review downloaded source files locally
+compatibility: requires trusted network access and the ability to review candidate skill files locally
 permissions:
-  fileRead: true - Read downloaded skill files for security inspection
-  fileWrite: true - Write skill files to target installation directory
-  network: true - Access trusted skill registries (ClawHub, skills.sh, GitHub) to search and download
-  shell: true - Execute git clone, curl to retrieve skill source code
+  fileRead: true - Read candidate skill files for review and safety checks
+  fileWrite: true - Write reviewed skill files to the selected installation directory
+  network: true - Access trusted skill registries (ClawHub, skills.sh, GitHub) to discover and review skills
+  shell: true - Use standard local tools to inspect or retrieve skill source when the user explicitly approves
 trustScore: 90
 category: Utility
 ---
@@ -47,7 +47,7 @@ Users can add additional sources later by updating this list in SKILL.md.
 ## Security and runtime model
 
 - This skill may access trusted registries and repositories including `https://clawhub.ai/`, `https://skills.sh/`, and relevant GitHub repositories.
-- It requires network access plus `git`, `curl`, and the ability to inspect downloaded source files locally; if `clawhub` CLI is available, prefer it for ClawHub-hosted skills.
+- It may use trusted local tooling and network access to inspect candidate skill source locally; if `clawhub` CLI is available, prefer it for ClawHub-hosted skills.
 - Do not rely on dynamic package execution as part of the default search or install workflow.
 - Do not download or install anything without explicit user confirmation.
 - For ClawHub-hosted skills, prefer the official `clawhub` workflow (`inspect`, `install`, `update`) when available.
@@ -58,9 +58,9 @@ Users can add additional sources later by updating this list in SKILL.md.
 ## Core rules
 
 1. **Always confirm before downloading**: Do not download any skill without explicit instruction from the user. If the user just asks about skills or where to find them, recommend sources but wait for a clear download command.
-2. **Security**: Before installation, automatically read the content of the new skill to check for sensitive content:
-   - Check the main code and documentation for malicious behavior: unauthorized data exfiltration, secret stealing, automatic destructive operations, malicious code obfuscation
-   - If suspicious sensitive content is detected, abort installation and inform the user of the specific risk found
+2. **Security**: Before installation, review the candidate skill content for unsafe behavior or suspicious patterns.
+   - Check the main code and documentation for unauthorized data collection, destructive behavior, hidden execution paths, or suspicious obfuscation
+   - If suspicious content is detected, abort installation and inform the user of the specific risk found
 3. **Search order**: Search for the skill in the default trusted sources in priority order, with `https://clawhub.ai/` first by default. If not found, ask the user if they can provide an alternative download URL.
 4. **Recommend when uncertain**: If unsure where to find the skill, list the available trusted sources and ask the user which one to use.
 5. **Multiple results handling**: If multiple matching skills are found:
@@ -126,9 +126,9 @@ Use the official ClawHub installation workflow for ClawHub-hosted skills wheneve
 
 3. **Internal sensitive content check**
    - For the transparent file installation workflow: download to a unique per-run temporary location and do not use symlink-based installation
-   - After downloading to a temporary location, automatically read all text files to check for sensitive/malicious content:
-     - Look for patterns: unauthorized private data collection, secret/credential exfiltration, destructive system commands (rm -rf /, etc.), obfuscated malicious code, crypto-mining scripts
-   - If suspicious sensitive/malicious content is detected: delete the download, inform user of the specific issues, stop
+   - After downloading to a temporary location, automatically read text files to check for suspicious or unsafe content
+     - Look for patterns such as unauthorized private data collection, destructive commands, hidden execution paths, or suspicious obfuscation
+   - If suspicious content is detected: delete the download, inform user of the specific issues, stop
    - If no suspicious content is found: proceed to installation
    - If the official `clawhub` workflow is available for a ClawHub-hosted skill, prefer `clawhub inspect` before `clawhub install`
    - If additional third-party safety tools are available and the user wants extra checks, run them as an extra verification layer after the baseline manual review
