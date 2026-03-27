@@ -1,7 +1,7 @@
 ---
 name: skill-downloader
 version: 0.1.13
-description: Discover and install OpenClaw skills from trusted sources including ClawHub, skills.sh, and GitHub. Handles both "find X skill" discovery queries and "install X skill" requests using transparent review and safe installation steps. Always use this skill when the user requests to download, install, or add third-party skills.
+description: Discover and review OpenClaw skills from trusted sources such as ClawHub, skills.sh, and GitHub, then assist with user-approved installation when appropriate. Use when the user wants to find, compare, inspect, or carefully install third-party skills.
 author: Yyang100
 triggers:
   - "search"
@@ -20,14 +20,14 @@ permissions:
   fileRead: true - Read candidate skill files for review and safety checks
   fileWrite: true - Write reviewed skill files to the selected installation directory
   network: true - Access trusted skill registries (ClawHub, skills.sh, GitHub) to discover and review skills
-  shell: true - Use standard local tools to inspect or retrieve skill source when the user explicitly approves
+  shell: true - Use standard local tools to support approved inspection and installation workflows when required
 trustScore: 90
 category: Utility
 ---
 
 # Skill Downloader
 
-Discover and install OpenClaw skills from trusted sources with transparent review and safe installation handling.
+Discover and review OpenClaw skills from trusted sources, then assist with careful installation when the user explicitly approves it.
 
 ## Source
 
@@ -47,11 +47,11 @@ Users can add additional sources later by updating this list in SKILL.md.
 ## Security and runtime model
 
 - This skill may access trusted registries and repositories including `https://clawhub.ai/`, `https://skills.sh/`, and relevant GitHub repositories.
-- It may use trusted local tooling and network access to inspect candidate skill source locally; if `clawhub` CLI is available, prefer it for ClawHub-hosted skills.
+- It may use trusted local tooling and network access to inspect candidate skill files locally; if `clawhub` CLI is available, prefer it for ClawHub-hosted skills.
 - Do not rely on dynamic package execution as part of the default search or install workflow.
 - Do not download or install anything without explicit user confirmation.
 - For ClawHub-hosted skills, prefer the official `clawhub` workflow (`inspect`, `install`, `update`) when available.
-- If the official ClawHub workflow is unavailable, use an agent-managed transparent file installation workflow with a unique per-run temporary working directory.
+- If the official ClawHub workflow is unavailable, use an agent-managed transparent fallback workflow with a unique per-run temporary working directory.
 - Prefer direct inspection of downloaded source files before installation when using the transparent file installation workflow.
 - Optional third-party safety tools may be used as extra checks when available, but transparent local source review is the baseline requirement.
 
@@ -101,9 +101,9 @@ When user only asks to "search", "find", or "look for" a skill (no download/inst
 5. **If yes** → Continue to Mode B (Installation)
 6. **Done** — End here if user just wants to browse
 
-### Mode B: Installation (download + install)
+### Mode B: Installation (review + approved install)
 
-Use the official ClawHub installation workflow for ClawHub-hosted skills whenever the `clawhub` CLI is available. Use the transparent file installation workflow only when the official ClawHub workflow is unavailable or when the source is outside ClawHub.
+Use the official ClawHub installation workflow for ClawHub-hosted skills whenever the `clawhub` CLI is available. Use the transparent fallback workflow only when the official ClawHub workflow is unavailable or when the source is outside ClawHub.
 
 1. **Capture request**
    - Extract the skill name to download
