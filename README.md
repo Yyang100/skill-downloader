@@ -1,6 +1,10 @@
 # Skill Downloader
 
-> Discover and install OpenClaw skills from trusted sources with transparent review and directory-safe installation handling.
+> Discover, review, and install OpenClaw skills from trusted sources with transparent review and careful installation handling.
+
+Skill Downloader helps agents discover and review OpenClaw skills from trusted sources before installation.
+
+By default it operates in search-and-review mode. It does not automatically execute third-party code, and any download or installation step requires explicit user approval plus local source inspection.
 
 ## Source
 
@@ -10,14 +14,26 @@
 
 ## Features
 
-- 🔍 **Search skills**: Discover skills by name or description (triggers on "find X skill", "search for Y", etc.)
-- 📥 **Install skills**: Install trusted skills with transparent review and safe installation steps (triggers on "install X skill", "download Y", etc.)
-- 🛡️ **Security-aware workflow**: Prioritizes manual source review before installation; optional extra checks can be run when available
-- 📁 **Flexible installation**: 
-  - Global install to `~/.openclaw/skills` (when user mentions "global")
-  - Local install to current workspace `./skills` (default)
-- 📊 **Smart recommendations**: Shows popularity, descriptions, and recommends the best match
-- 🚫 **No symlinks**: Copies full source files to target directory (no linking)
+- 🔍 **Search skills**: Discover candidate skills by name, summary, or use case
+- 🧾 **Review before install**: Default behavior is discovery and inspection, not automatic installation
+- 🛡️ **Security-first workflow**: Emphasizes explicit approval, local source review, and trusted-source preference
+- 📦 **Careful installation assistance**: Supports transparent installation only after the user confirms
+- 📁 **Flexible installation targets**:
+  - Global install to `~/.openclaw/skills` when the user explicitly asks for global installation
+  - Local install to current workspace `./skills` by default
+- 📊 **Smart recommendations**: Shows popularity, descriptions, and suggests the best match when multiple skills are available
+- 🚫 **No symlink installs**: Uses copied source files for transparent fallback installs
+
+## Safety first
+
+This skill is designed to reduce installation risk, not bypass review.
+
+- Default mode is discovery and review, not automatic installation
+- Never install a skill without explicit user confirmation
+- Prefer official ClawHub workflows when available
+- Inspect downloaded source files before installation
+- Do not automatically execute third-party repositories or package scripts
+- If a source looks suspicious, stop and report the risk clearly
 
 ## Trusted Sources (by priority)
 
@@ -27,53 +43,39 @@
 
 You can add more trusted sources by editing `SKILL.md`.
 
-## Maintenance note
-
-When updating this skill's behavior or source priority, keep `SKILL.md` and `README.md` in sync.
-
-## Security and runtime model
-
-- This skill may access trusted registries and repositories including `https://clawhub.ai/`, `https://skills.sh/`, and relevant GitHub repositories.
-- It requires a network connection, `git`, `curl`, and access to trusted registries/repositories; if `clawhub` CLI is available, prefer it for ClawHub-hosted skills.
-- It does not rely on dynamic package execution as part of the default search or install workflow.
-- The skill must not download or install anything without explicit user confirmation.
-- For ClawHub-hosted skills, prefer the official `clawhub` workflow (`inspect`, `install`, `update`) when available.
-- If the official ClawHub workflow is unavailable, use an agent-managed transparent file installation workflow with unique per-run temporary directories.
-- Downloaded skill contents should be reviewed before installation, and source files should be copied rather than symlinked into the target directory unless the official ClawHub workflow is used.
-- The skill is intended to help users inspect and install third-party skills; it is not intended to execute arbitrary unrelated packages or bypass user review.
-
 ## When to use this skill
 
 Use this skill whenever the user:
-- Asks to "find", "search", or "look for" a skill (search mode)
-- Requests to "download", "install", or "add" a skill (install mode)
-- Asks "is there a skill that can..." or "有没有...技能"
+- Asks to find, search, or look for a skill
+- Requests to download, install, or add a skill
+- Asks whether a skill exists for a certain task
+- Wants to compare candidates before choosing one to install
 
-## Core Rules
+## Security and runtime model
 
-1. **Always confirm before downloading** - Never download without explicit user instruction
-2. **Security-aware review** - Always review downloaded source contents before installation; if issues are found, abort
-3. **Search in priority order** - ClawHub first, then skills.sh, then GitHub
-4. **Prefer official ClawHub installation** - For ClawHub-hosted skills, use `clawhub inspect/install/update` when the CLI is available
-5. **Transparent fallback workflow** - If official ClawHub installation is unavailable, use an agent-managed transparent file installation workflow
-6. **Temporary working directory** - Use a unique per-run temporary working directory for transparent file installation
-7. **Cleanup** - Remove temporary files after installation
+- This skill may access trusted registries and repositories including `https://clawhub.ai/`, `https://skills.sh/`, and relevant GitHub repositories
+- It requires a network connection, `git`, `curl`, and the ability to inspect downloaded source files locally
+- It does not rely on dynamic package execution as part of the default search or install workflow
+- It must not download or install anything without explicit user confirmation
+- For ClawHub-hosted skills, prefer the official `clawhub` workflow (`inspect`, `install`, `update`) when available
+- If the official ClawHub workflow is unavailable, use an agent-managed transparent file installation workflow with unique per-run temporary directories
+- Reviewed source files should be copied rather than symlinked into the target directory unless the official ClawHub workflow is used
 
 ## Workflow
 
 ### Mode A: Search Only
-1. **Detect search intent** - User asks to find/search a skill
-2. **Search trusted sources in priority order** - Search ClawHub first, then inspect trusted repository pages or user-provided links for skills.sh and other sources
-3. **Present results** - Show table with name, popularity, URL
-4. **Wait for user** - Ask if they want to install any result
+1. Detect search intent
+2. Search trusted sources in priority order
+3. Present results with recommendations
+4. Wait for the user's selection
 
 ### Mode B: Installation
-1. **Capture request** - Get skill name and check if global installation is requested
-2. **Find the skill** - Search ClawHub first, then other trusted sources in priority order; show results with recommendations
-3. **Choose installation workflow** - Prefer the official `clawhub` workflow for ClawHub-hosted skills; otherwise use the transparent file installation workflow
-4. **Security check** - Review downloaded source contents and evaluate utility when using the transparent file installation workflow
-5. **Install** - Install via `clawhub` when available for ClawHub-hosted skills, otherwise copy full source to target directory and verify structure
-6. **Cleanup** - Remove the unique per-run temporary working directory used by the transparent file installation workflow
+1. Capture the request and confirm installation intent
+2. Find the skill in trusted sources
+3. Prefer the official `clawhub` workflow when available
+4. Review candidate files for safety
+5. Install only after explicit approval
+6. Clean up temporary files
 
 ## Installation
 
@@ -96,10 +98,14 @@ If `clawhub` is unavailable, fall back to the transparent file installation work
 
 - git
 - curl
-- network access to trusted registries/repositories
-- ability to review downloaded text/source files locally
-- `skill-scanner` (optional additional check, when available)
-- `skill-vetting` (optional additional check, when available)
+- network access to trusted registries and repositories
+- ability to review downloaded text or source files locally
+- `skill-scanner` (optional extra check, when available)
+- `skill-vetting` (optional extra check, when available)
+
+## Maintenance note
+
+When updating this skill's behavior or source priority, keep `SKILL.md` and `README.md` in sync.
 
 ## License
 
