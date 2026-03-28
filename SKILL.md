@@ -1,7 +1,7 @@
 ---
 name: skill-downloader
-version: 0.1.14
-description: Discover and review OpenClaw skills from trusted sources such as ClawHub, skills.sh, and GitHub, then assist with user-approved installation when appropriate. Designed for careful search, comparison, inspection, and installation guidance rather than automatic execution.
+version: 0.1.15
+description: Discover, compare, and review OpenClaw skills from trusted sources such as ClawHub, skills.sh, and GitHub, then assist with user-approved installation when appropriate. Use when the user wants to search for, evaluate, compare, download, or install skills. Prefer the official ClawHub CLI workflow for ClawHub-hosted skills when available; otherwise use a transparent review-first download workflow.
 author: Yyang100
 triggers:
   - "search"
@@ -65,10 +65,13 @@ Users can add additional sources later by updating this list in SKILL.md.
 3. **Search order**: Search for the skill in the default trusted sources in priority order, with `https://clawhub.ai/` first by default. If not found, ask the user if they can provide an alternative download URL.
 4. **Recommend when uncertain**: If unsure where to find the skill, list the available trusted sources and ask the user which one to use.
 5. **Multiple results handling**: If multiple matching skills are found:
-   - Collect skill name, description, popularity/install count (if available), source repository, and skills.sh page URL
-   - Organize into a clear list/table for the user
-   - For each skill, add a short recommendation note explaining its best use case
+   - Collect skill name, description, available ranking signals (such as popularity/install count, search score, stars, recency, or source quality), source repository, and skills.sh page URL when available
+   - Organize results into a clear comparison table or structured list for the user
+   - For each skill, include a short recommendation note explaining its best use case
+   - Explicitly surface ranking evidence when available instead of inventing a synthetic numeric score
+   - If a field is unavailable from the source, mark it clearly as `unknown` instead of omitting it
    - After listing all skills, give a summary recommendation of which one to choose overall, prioritizing skills that are secure, actively maintained, and have high functional matching
+   - Do not stop at a bare name list when the user asked to search for skills; provide comparison plus a recommendation unless the user explicitly asked for names only
 
 ## Installation directory rules
 
@@ -92,12 +95,16 @@ Follow these rules strictly for where to install the skill:
 When user only asks to "search", "find", or "look for" a skill (no download/install intent):
 
 1. **Detect search intent** — User asks "find X skill", "search for Y", "is there a skill that can..."
-2. **Search trusted sources in priority order** — Prefer searching `https://clawhub.ai/` first; if needed, inspect trusted repository pages or user-provided links for skills.sh and then other trusted sources
-3. **Present results** — Show results in table format with:
+2. **Search trusted sources in priority order** — Prefer searching `https://clawhub.ai/` first. When the skill is hosted on ClawHub and the local `clawhub` CLI is available, use the official `clawhub search` / `clawhub inspect` workflow by default. Use skills.sh, GitHub, or other trusted sources as supplements when ClawHub does not have a clear match, when the user asks for broader comparison, or when additional source verification is useful.
+3. **Present results** — Show results as a comparison table or structured list. Unless the user explicitly asks for names only, include as many of the following as the source can provide:
    - Skill name and owner/repo
-   - Install count (popularity)
-   - Skills.sh URL
-   - Brief recommendation
+   - Short description
+   - Source URL
+   - Popularity or ranking signals (for example install count, search score, stars, recency, or source quality)
+   - Best-use-case recommendation for each result
+   - Clear note when a field is unavailable (`unknown`)
+   - A final overall recommendation with a preferred choice and, when useful, one backup option
+   Do not respond with only a bare list of names for normal search requests.
 4. **Wait for user** — Ask if they want to install any of the results
 5. **If yes** → Continue to Mode B (Installation)
 6. **Done** — End here if user just wants to browse
