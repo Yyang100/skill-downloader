@@ -1,8 +1,8 @@
 # Skill Downloader
 
-> Discover OpenClaw skills from trusted sources and guide safe review before installation.
+> Discover, compare, and review OpenClaw skills from trusted sources, then guide safe installation when the user explicitly approves it.
 
-Skill Downloader helps agents discover candidate OpenClaw skills from trusted sources and review them carefully before installation.
+Skill Downloader helps agents discover candidate OpenClaw skills from trusted sources, compare them using available ranking evidence, and review them carefully before installation.
 
 By default it operates in search-and-review mode. It does not automatically run third-party code, and any download or installation step requires explicit user approval and local source inspection.
 
@@ -21,7 +21,7 @@ By default it operates in search-and-review mode. It does not automatically run 
 - 📁 **Flexible installation targets**:
   - Global install to `~/.openclaw/skills` when the user explicitly asks for global installation
   - Local install to current workspace `./skills` by default
-- 📊 **Smart recommendations**: Shows popularity, descriptions, and suggests the best match when multiple skills are available
+- 📊 **Structured comparisons and recommendations**: Shows available ranking evidence (such as search score, popularity, stars, recency, or source quality), highlights missing fields as `unknown`, and suggests the best match when multiple skills are available
 - 🚫 **No symlink installs**: Uses copied source files for transparent fallback installs
 
 ## Safety first
@@ -54,10 +54,11 @@ Use this skill whenever the user:
 ## Security and runtime model
 
 - This skill may access trusted registries and repositories including `https://clawhub.ai/`, `https://skills.sh/`, and relevant GitHub repositories
-- It requires a network connection, `git`, `curl`, and the ability to inspect downloaded source files locally
+- It requires a network connection and the ability to inspect downloaded source files locally
+- It may use standard local command-line tools when needed, but should not assume every environment has the same toolchain available
 - It does not rely on dynamic package execution as part of the default search or install workflow
 - It must not download or install anything without explicit user confirmation
-- For ClawHub-hosted skills, prefer the official `clawhub` workflow (`inspect`, `install`, `update`) when available
+- For ClawHub-hosted skills, prefer the official `clawhub` workflow (`search`, `inspect`, `install`, `update`) when available
 - If the official ClawHub workflow is unavailable, use an agent-managed transparent file installation workflow with unique per-run temporary directories
 - Reviewed source files should be copied rather than symlinked into the target directory unless the official ClawHub workflow is used
 
@@ -65,8 +66,8 @@ Use this skill whenever the user:
 
 ### Mode A: Search Only
 1. Detect search intent
-2. Search trusted sources in priority order
-3. Present results with recommendations
+2. Search trusted sources in priority order, preferring ClawHub first and using the official `clawhub search` / `clawhub inspect` workflow for ClawHub-hosted skills when available
+3. Present results as a comparison table or structured list with available ranking evidence, per-skill best-use-case notes, `unknown` markers for unavailable fields, and a final preferred recommendation
 4. Wait for the user's selection
 
 ### Mode B: Installation
@@ -88,6 +89,7 @@ Recommended installation target for a global install:
 For ClawHub-hosted skills, prefer the official CLI workflow when available:
 
 ```bash
+clawhub search "<query>"
 clawhub inspect <slug>
 clawhub install <slug> --dir ~/.openclaw/skills
 ```
@@ -96,10 +98,10 @@ If `clawhub` is unavailable, use the transparent fallback workflow to review sou
 
 ## Requirements
 
-- git
-- curl
 - network access to trusted registries and repositories
 - ability to review downloaded text or source files locally
+- standard local command-line tooling when available
+- `clawhub` CLI for the preferred ClawHub workflow (when installed)
 - `skill-scanner` (optional extra check, when available)
 - `skill-vetting` (optional extra check, when available)
 
