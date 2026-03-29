@@ -6,12 +6,6 @@ Skill Downloader helps agents discover candidate OpenClaw skills from trusted so
 
 By default it operates in search-and-review mode. It does not automatically run third-party code, and any download or installation step requires explicit user approval and local source inspection.
 
-## Source
-
-- Maintainer: `Yyang100`
-- Canonical repository: `https://github.com/Yyang100/skill-downloader`
-- ClawHub page: `https://clawhub.ai/yyang100/skill-downloader`
-
 ## Features
 
 - 🔍 **Search skills**: Discover candidate skills by name, summary, or use case
